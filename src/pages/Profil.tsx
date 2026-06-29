@@ -1,0 +1,66 @@
+import PageWrapper, { Reveal } from '../components/PageWrapper'
+import { StepNav } from '../components/StepProgress'
+import { about } from '../data/portfolio'
+
+export default function Profil() {
+  return (
+    <PageWrapper>
+      <section className="pt-32 pb-16">
+        <div className="max-w-[1180px] mx-auto px-[clamp(20px,5vw,52px)]">
+          <Reveal>
+            <div className="label mb-4">Étape 02 — Profil</div>
+            <h2 className="stitle mb-3">
+              Analytique <em>&amp; Stratégique</em>
+            </h2>
+          </Reveal>
+
+          <div className="grid lg:grid-cols-[1fr_1.4fr] gap-[clamp(40px,7vw,90px)] items-start mt-14">
+            {/* Left — bio */}
+            <div>
+              <Reveal>
+                <div className="w-20 h-20 border border-goldBorder rounded bg-goldD flex items-center justify-center mb-7 shadow-lg">
+                  <span className="font-display text-3xl font-bold text-gold tracking-tight">KZ</span>
+                </div>
+              </Reveal>
+
+              {about.paragraphs.map((p, i) => (
+                <Reveal key={i} delay={0.05 + i * 0.08}>
+                  <p className="text-[15px] leading-[1.85] text-ink2 mb-5">{p}</p>
+                </Reveal>
+              ))}
+
+              <Reveal delay={0.2}>
+                <ul className="list-none flex flex-col gap-3.5 mt-8">
+                  {about.meta.map((m) => (
+                    <li key={m.k} className="flex items-start gap-4 text-sm text-ink2">
+                      <span className="font-mono text-[10px] tracking-wider uppercase text-gold min-w-[88px] pt-0.5">
+                        {m.k}
+                      </span>
+                      <span>{m.v}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            </div>
+
+            {/* Right — pillars */}
+            <div className="flex flex-col gap-4.5 gap-y-5">
+              {about.pillars.map((pillar, i) => (
+                <Reveal key={pillar.cat} delay={0.1 + i * 0.1}>
+                  <article className="interactive glass border-l-2 border-l-gold rounded-sm px-7 py-6 hover:bg-bg2 hover:border-l-goldL hover:translate-x-1 transition-all duration-300">
+                    <span className="block font-mono text-base text-gold mb-2.5">
+                      {pillar.ico} {pillar.cat}
+                    </span>
+                    <h3 className="font-display text-lg font-semibold text-ink mb-2">{pillar.h}</h3>
+                    <p className="text-[13.5px] leading-[1.75] text-ink2">{pillar.p}</p>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+      <StepNav />
+    </PageWrapper>
+  )
+}
