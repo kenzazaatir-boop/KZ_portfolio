@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import PageWrapper from '../components/PageWrapper'
+import SplitReveal from '../components/SplitReveal'
+import Magnetic from '../components/Magnetic'
+import CountUp from '../components/CountUp'
 import { profile, stats } from '../data/portfolio'
 
 const container = {
@@ -36,9 +39,11 @@ export default function Hero() {
               className="font-display font-bold leading-[0.95] tracking-[-0.04em] text-ink mb-4"
               style={{ fontSize: 'clamp(64px, 10vw, 128px)' }}
             >
-              {profile.name}
+              <SplitReveal text={profile.name} delay={0.35} wordDelay={0.08} />
               <br />
-              <em className="not-italic italic text-gold block">{profile.lastName}</em>
+              <span className="not-italic italic text-gold block">
+                <SplitReveal text={profile.lastName} delay={0.55} wordDelay={0.08} />
+              </span>
             </motion.h1>
 
             <motion.p
@@ -61,18 +66,22 @@ export default function Hero() {
             </motion.div>
 
             <motion.div variants={item} className="flex flex-wrap gap-3.5">
-              <Link to="/profil" className="btn btn-gold">
-                Commencer la visite
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
-              <a href={profile.cv} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Télécharger CV
-              </a>
+              <Magnetic as="span" strength={0.4}>
+                <Link to="/profil" className="btn btn-gold interactive">
+                  Commencer la visite
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+              </Magnetic>
+              <Magnetic as="span" strength={0.4}>
+                <a href={profile.cv} target="_blank" rel="noopener noreferrer" className="btn btn-ghost interactive">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Télécharger CV
+                </a>
+              </Magnetic>
             </motion.div>
 
             {/* Stats */}
@@ -81,9 +90,11 @@ export default function Hero() {
               className="grid grid-cols-3 gap-px mt-14 max-w-xl rounded overflow-hidden border border-glass"
               style={{ background: 'rgba(255,255,255,0.08)' }}
             >
-              {stats.map((s) => (
-                <div key={s.l} className="glass px-4 py-5 text-center">
-                  <div className="font-display text-[34px] font-bold text-gold leading-none mb-1.5">{s.n}</div>
+              {stats.map((s, i) => (
+                <div key={s.l} className="glass px-4 py-5 text-center transition-colors hover:bg-white/[0.04]">
+                  <div className="font-display text-[34px] font-bold text-gold leading-none mb-1.5">
+                    <CountUp value={s.n} delay={0.9 + i * 0.15} />
+                  </div>
                   <div className="font-mono text-[10px] tracking-wide uppercase text-ink3">{s.l}</div>
                 </div>
               ))}
@@ -95,7 +106,9 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.8, x: 40 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.5, ease: [0.4, 0, 0.2, 1] }}
-            className="hidden lg:flex justify-center items-center relative"
+            whileHover={{ scale: 1.03 }}
+            className="hidden lg:flex justify-center items-center relative interactive"
+            style={{ transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)' }}
           >
             <motion.div
               animate={{ y: [0, -16, 0] }}

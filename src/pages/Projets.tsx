@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import PageWrapper, { Reveal } from '../components/PageWrapper'
 import { StepNav } from '../components/StepProgress'
+import Magnetic from '../components/Magnetic'
 import { projects, Project } from '../data/portfolio'
 
 const domainStyles: Record<string, string> = {
@@ -14,7 +15,7 @@ const domainStyles: Record<string, string> = {
 function TiltCard({ project, index }: { project: Project; index: number }) {
   const ref = useRef<HTMLDivElement>(null)
   const shineRef = useRef<HTMLDivElement>(null)
-  const MAX_TILT = 6
+  const MAX_TILT = 8
 
   const onMove = (e: React.MouseEvent) => {
     const card = ref.current!
@@ -23,11 +24,11 @@ function TiltCard({ project, index }: { project: Project; index: number }) {
     const cy = rect.top + rect.height / 2
     const dx = (e.clientX - cx) / (rect.width / 2)
     const dy = (e.clientY - cy) / (rect.height / 2)
-    card.style.transform = `perspective(900px) rotateX(${-dy * MAX_TILT}deg) rotateY(${dx * MAX_TILT}deg) translateZ(6px)`
+    card.style.transform = `perspective(900px) rotateX(${-dy * MAX_TILT}deg) rotateY(${dx * MAX_TILT}deg) translateZ(14px) scale(1.015)`
     if (shineRef.current) {
       const mx = ((e.clientX - rect.left) / rect.width) * 100
       const my = ((e.clientY - rect.top) / rect.height) * 100
-      shineRef.current.style.background = `radial-gradient(circle at ${mx}% ${my}%, rgba(255,255,255,0.07), transparent 55%)`
+      shineRef.current.style.background = `radial-gradient(circle at ${mx}% ${my}%, rgba(228,182,114,0.16), transparent 45%)`
     }
   }
   const onLeave = () => {
@@ -42,10 +43,10 @@ function TiltCard({ project, index }: { project: Project; index: number }) {
         ref={ref}
         onMouseMove={onMove}
         onMouseLeave={onLeave}
-        className="relative overflow-hidden glass rounded p-[clamp(28px,4vw,44px)] flex flex-col gap-4.5 gap-y-5 transition-[transform,box-shadow] duration-300 will-change-transform hover:border-[rgba(168,120,58,0.22)] h-full"
+        className="relative overflow-hidden glass rounded p-[clamp(28px,4vw,44px)] flex flex-col gap-4.5 gap-y-5 transition-[transform,box-shadow] duration-300 will-change-transform hover:border-[rgba(168,120,58,0.3)] hover:shadow-[0_25px_60px_-20px_rgba(196,148,80,0.35)] h-full"
         style={{ transformStyle: 'preserve-3d' }}
       >
-        <div ref={shineRef} className="pointer-events-none absolute inset-0 rounded transition-opacity z-10" />
+        <div ref={shineRef} className="pointer-events-none absolute inset-0 rounded transition-[background] duration-150 z-10" />
 
         {/* Project visual */}
         <div className="relative -mx-[clamp(28px,4vw,44px)] -mt-[clamp(28px,4vw,44px)] mb-1 h-44 md:h-52 overflow-hidden">
@@ -99,17 +100,19 @@ function TiltCard({ project, index }: { project: Project; index: number }) {
 
         <div className="mt-auto pt-2">
           {project.link ? (
-            <a
-              href={project.link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2 text-[13px] font-medium text-gold no-underline hover:text-goldL transition-colors"
-            >
-              {project.link.label}
-              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className="transition-transform group-hover:translate-x-1">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </a>
+            <Magnetic as="span" strength={0.35}>
+              <a
+                href={project.link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2 text-[13px] font-medium text-gold no-underline hover:text-goldL transition-colors"
+              >
+                {project.link.label}
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className="transition-transform group-hover:translate-x-1">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+            </Magnetic>
           ) : (
             <span className="text-[13px] text-ink3">Projet académique</span>
           )}
