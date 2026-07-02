@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Float, Environment, Sparkles, MeshDistortMaterial, Trail } from '@react-three/drei'
-import { EffectComposer, Bloom, Vignette, ChromaticAberration } from '@react-three/postprocessing'
+import { Float, Environment, Sparkles, MeshDistortMaterial, Trail, Stars, MeshReflectorMaterial } from '@react-three/drei'
+import { EffectComposer, Bloom, Vignette, ChromaticAberration, DepthOfField, Noise } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { useRef, useMemo, Suspense } from 'react'
 import * as THREE from 'three'
@@ -83,13 +83,13 @@ function Core() {
 }
 
 // ─── Orbiting light-trail comet for dynamic video feel ───
-function Comet() {
+function Comet({ phase = 0, speed = 1, size = 0.06, trailColor = '#E4B672' }: { phase?: number; speed?: number; size?: number; trailColor?: string }) {
   const ref = useRef<THREE.Mesh>(null!)
   const mood = useMood()
-  const curColor = useRef(new THREE.Color('#E4B672'))
+  const curColor = useRef(new THREE.Color(trailColor))
 
   useFrame((state, delta) => {
-    const t = state.clock.elapsedTime
+    const t = state.clock.elapsedTime * speed + phase
     const R = mood.radius * 1.3
     ref.current.position.set(
       Math.cos(t * 0.6) * R,
@@ -101,12 +101,43 @@ function Comet() {
   })
 
   return (
-    <Trail width={2.5} length={7} color={'#E4B672'} attenuation={(w) => w * w}>
+    <Trail width={2.5} length={7} color={trailColor} attenuation={(w) => w * w}>
       <mesh ref={ref}>
-        <sphereGeometry args={[0.06, 16, 16]} />
-        <meshBasicMaterial color="#E4B672" toneMapped={false} />
+        <sphereGeometry args={[size, 16, 16]} />
+        <meshBasicMaterial color={trailColor} toneMapped={false} />
       </mesh>
     </Trail>
+  )
+}
+
+// ─── Reflective floor for cinematic depth (like a studio product shot) ───
+function FloorReflection() {
+  const mood = useMood()
+  const mat = useRef<any>(null!)
+  const curColor = useRef(new THREE.Color('#C49450'))
+
+  useFrame((_, delta) => {
+    curColor.current.lerp(mood.color, Math.min(delta * 1.8, 1))
+    if (mat.current) mat.current.color?.set?.(curColor.current)
+  })
+
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.4, 0]}>
+      <planeGeometry args={[60, 60]} />
+      <MeshReflectorMaterial
+        ref={mat}
+        blur={[400, 100]}
+        resolution={512}
+        mixBlur={1}
+        mixStrength={35}
+        roughness={1}
+        depthScale={1}
+        minDepthThreshold={0.85}
+        color="#0a0a0c"
+        metalness={0.4}
+        mirror={0.35}
+      />
+    </mesh>
   )
 }
 
@@ -190,9 +221,12 @@ function CameraRig() {
   useFrame((state, delta) => {
     const lerp = Math.min(delta * 1.4, 1)
     const t = state.clock.elapsedTime
+    // Subtle organic "handheld camera" micro-jitter — makes the motion feel shot, not looped
+    const shakeX = (Math.sin(t * 8.3) * 0.5 + Math.sin(t * 5.1) * 0.5) * 0.025
+    const shakeY = (Math.sin(t * 7.1) * 0.5 + Math.sin(t * 4.4) * 0.5) * 0.025
     const targetZ = mood.camZ + Math.sin(t * 0.15) * 0.4
-    const targetX = pointer.x * 1.4 + Math.sin(t * 0.1) * 0.6
-    const targetY = mood.camY + pointer.y * 0.9 + Math.cos(t * 0.12) * 0.3
+    const targetX = pointer.x * 1.4 + Math.sin(t * 0.1) * 0.6 + shakeX
+    const targetY = mood.camY + pointer.y * 0.9 + Math.cos(t * 0.12) * 0.3 + shakeY
     camera.position.z += (targetZ - camera.position.z) * lerp
     camera.position.x += (targetX - camera.position.x) * lerp
     camera.position.y += (targetY - camera.position.y) * lerp
@@ -238,8 +272,12 @@ export default function Scene3D() {
           <DynamicLights />
           <CameraRig />
 
+          <Stars radius={70} depth={40} count={2200} factor={3.2} saturation={0} fade speed={0.5} />
+          <FloorReflection />
+
           <Core />
-          <Comet />
+          <Comet phase={0} speed={1} size={0.06} trailColor="#E4B672" />
+          <Comet phase={Math.PI} speed={0.72} size={0.045} trailColor="#8C80F2" />
           <ParticleField />
 
           <Sparkles count={80} scale={14} size={3} speed={0.3} opacity={0.5} color="#E4B672" />
@@ -252,12 +290,19 @@ export default function Scene3D() {
               mipmapBlur
               radius={0.7}
             />
+            <DepthOfField
+              focusDistance={0.012}
+              focalLength={0.09}
+              bokehScale={3.5}
+              height={480}
+            />
             <ChromaticAberration
               blendFunction={BlendFunction.NORMAL}
               offset={[0.0006, 0.0006] as any}
               radialModulation={false}
               modulationOffset={0}
             />
+            <Noise blendFunction={BlendFunction.OVERLAY} opacity={0.035} premultiply />
             <Vignette eskil={false} offset={0.25} darkness={0.85} />
           </EffectComposer>
         </Suspense>
