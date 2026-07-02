@@ -21,6 +21,7 @@ const external = [
 ]
 
 export default defineConfig({
+  base: './',
   plugins: [react()],
   server: {
     host: '0.0.0.0',
