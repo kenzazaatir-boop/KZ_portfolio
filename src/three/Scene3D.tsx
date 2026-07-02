@@ -1,13 +1,13 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Float, Environment, Sparkles, MeshDistortMaterial, Trail, Stars, MeshReflectorMaterial } from '@react-three/drei'
-import { EffectComposer, Bloom, Vignette, ChromaticAberration, DepthOfField, Noise } from '@react-three/postprocessing'
+import { Float, Sparkles, MeshDistortMaterial, Line } from '@react-three/drei'
+import { EffectComposer, Bloom, Vignette, ChromaticAberration, Noise } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
-import { useRef, useMemo, useState, useEffect, Suspense } from 'react'
+import { useRef, useMemo, useEffect, Suspense } from 'react'
 import * as THREE from 'three'
 import { useLocation } from 'react-router-dom'
 
 
-// ─── Per-route cinematic "mood" ──────────────────────────────
+// ─── Per-route cinematic "mood" — light, data/AI palette ──────────────────────────────
 type Mood = {
   color: THREE.Color
   emissive: THREE.Color
@@ -20,12 +20,12 @@ type Mood = {
 }
 
 const MOODS: Record<string, Mood> = {
-  '/':            { color: new THREE.Color('#C49450'), emissive: new THREE.Color('#E4B672'), radius: 3.0, spin: 0.06, camZ: 8.0, camY: 0.0,  spread: 0.6, distort: 0.3 },
-  '/profil':      { color: new THREE.Color('#E4B672'), emissive: new THREE.Color('#C49450'), radius: 3.6, spin: 0.04, camZ: 9.0, camY: 0.6,  spread: 1.4, distort: 0.4 },
-  '/projets':     { color: new THREE.Color('#8C80F2'), emissive: new THREE.Color('#6B5FC4'), radius: 4.6, spin: 0.09, camZ: 10.5, camY: -0.4, spread: 2.4, distort: 0.55 },
-  '/competences': { color: new THREE.Color('#42E8DF'), emissive: new THREE.Color('#2A9E97'), radius: 3.4, spin: 0.12, camZ: 8.5, camY: 0.3,  spread: 1.0, distort: 0.5 },
-  '/parcours':    { color: new THREE.Color('#5BA4F8'), emissive: new THREE.Color('#3A84D4'), radius: 4.0, spin: 0.05, camZ: 9.5, camY: -0.2, spread: 1.8, distort: 0.35 },
-  '/contact':     { color: new THREE.Color('#C49450'), emissive: new THREE.Color('#E4B672'), radius: 2.6, spin: 0.07, camZ: 7.0, camY: 0.0,  spread: 0.4, distort: 0.6 },
+  '/':            { color: new THREE.Color('#A8783A'), emissive: new THREE.Color('#C9954F'), radius: 3.0, spin: 0.06, camZ: 8.0, camY: 0.0,  spread: 0.6, distort: 0.28 },
+  '/profil':      { color: new THREE.Color('#C9954F'), emissive: new THREE.Color('#A8783A'), radius: 3.6, spin: 0.04, camZ: 9.0, camY: 0.6,  spread: 1.4, distort: 0.35 },
+  '/projets':     { color: new THREE.Color('#6E62D9'), emissive: new THREE.Color('#5B50BE'), radius: 4.6, spin: 0.09, camZ: 10.5, camY: -0.4, spread: 2.4, distort: 0.45 },
+  '/competences': { color: new THREE.Color('#0F9E92'), emissive: new THREE.Color('#0C8377'), radius: 3.4, spin: 0.12, camZ: 8.5, camY: 0.3,  spread: 1.0, distort: 0.42 },
+  '/parcours':    { color: new THREE.Color('#3A7FD4'), emissive: new THREE.Color('#2E66AD'), radius: 4.0, spin: 0.05, camZ: 9.5, camY: -0.2, spread: 1.8, distort: 0.32 },
+  '/contact':     { color: new THREE.Color('#A8783A'), emissive: new THREE.Color('#C9954F'), radius: 2.6, spin: 0.07, camZ: 7.0, camY: 0.0,  spread: 0.4, distort: 0.5 },
 }
 
 function useMood() {
@@ -33,22 +33,21 @@ function useMood() {
   return MOODS[location.pathname] || MOODS['/']
 }
 
-// ─── Glowing distorted crystalline core (video-like organic motion) ───
+// ─── Glowing distorted crystalline core — data nucleus ───
 function Core() {
   const mesh = useRef<THREE.Mesh>(null!)
   const inner = useRef<THREE.Group>(null!)
   const mat = useRef<any>(null!)
   const mood = useMood()
   const { pointer } = useThree()
-  const cur = useRef({ r: 1, distort: 0.3 })
-  const curColor = useRef(new THREE.Color('#C49450'))
-  const curEmissive = useRef(new THREE.Color('#E4B672'))
+  const cur = useRef({ r: 1, distort: 0.28 })
+  const curColor = useRef(new THREE.Color('#A8783A'))
+  const curEmissive = useRef(new THREE.Color('#C9954F'))
   const look = useRef({ x: 0, y: 0 })
 
   useFrame((state, delta) => {
     const lerp = Math.min(delta * 1.8, 1)
-    // Scale the core relative to particle radius
-    const targetScale = mood.radius * 0.34
+    const targetScale = mood.radius * 0.32
     cur.current.r += (targetScale - cur.current.r) * lerp
     cur.current.distort += (mood.distort - cur.current.distort) * lerp
     mesh.current.scale.setScalar(cur.current.r)
@@ -56,7 +55,6 @@ function Core() {
     mesh.current.rotation.y += delta * 0.15
     mesh.current.rotation.z += delta * 0.05
 
-    // Gentle "attention" toward the cursor — the core subtly leans toward pointer
     look.current.x += (pointer.x * 0.35 - look.current.x) * Math.min(delta * 2.2, 1)
     look.current.y += (-pointer.y * 0.25 - look.current.y) * Math.min(delta * 2.2, 1)
     if (inner.current) {
@@ -74,21 +72,23 @@ function Core() {
   })
 
   return (
-    <Float speed={1.5} rotationIntensity={0.7} floatIntensity={1.1}>
+    <Float speed={1.5} rotationIntensity={0.6} floatIntensity={1.0}>
       <group ref={inner}>
         <mesh ref={mesh}>
           <icosahedronGeometry args={[1, 12]} />
           <MeshDistortMaterial
             ref={mat}
-            color="#C49450"
-            emissive="#E4B672"
-            emissiveIntensity={0.35}
-            roughness={0.15}
-            metalness={0.9}
+            color="#A8783A"
+            emissive="#C9954F"
+            emissiveIntensity={0.5}
+            roughness={0.2}
+            metalness={0.75}
             clearcoat={1}
-            clearcoatRoughness={0.1}
-            distort={0.3}
+            clearcoatRoughness={0.15}
+            distort={0.28}
             speed={2.2}
+            transparent
+            opacity={0.94}
           />
         </mesh>
       </group>
@@ -96,13 +96,13 @@ function Core() {
   )
 }
 
-// ─── Orbiting "data ring" — thin torus made of segmented arcs, tech/analytics feel ───
+// ─── Orbiting "data ring" — thin torus, tech/analytics feel ───
 function DataRing({ tilt = 0.5, speedMul = 1, offset = 1.55 }: { tilt?: number; speedMul?: number; offset?: number }) {
   const group = useRef<THREE.Group>(null!)
   const mat = useRef<any>(null!)
   const mood = useMood()
   const cur = useRef({ r: 1 })
-  const curColor = useRef(new THREE.Color('#E4B672'))
+  const curColor = useRef(new THREE.Color('#C9954F'))
 
   useFrame((state, delta) => {
     const lerp = Math.min(delta * 1.8, 1)
@@ -126,13 +126,13 @@ function DataRing({ tilt = 0.5, speedMul = 1, offset = 1.55 }: { tilt?: number; 
         <torusGeometry args={[1, 0.012, 8, 128]} />
         <meshStandardMaterial
           ref={mat}
-          color="#E4B672"
-          emissive="#E4B672"
-          emissiveIntensity={1.4}
+          color="#C9954F"
+          emissive="#C9954F"
+          emissiveIntensity={1.1}
           roughness={0.3}
           metalness={0.6}
           transparent
-          opacity={0.55}
+          opacity={0.5}
           toneMapped={false}
         />
       </mesh>
@@ -140,14 +140,14 @@ function DataRing({ tilt = 0.5, speedMul = 1, offset = 1.55 }: { tilt?: number; 
   )
 }
 
-// ─── Burst of particles fired on route change — a "step complete" pulse ───
+// ─── Burst of particles fired on route change ───
 function RouteBurst() {
   const points = useRef<THREE.Points>(null!)
   const mat = useRef<THREE.PointsMaterial>(null!)
   const location = useLocation()
   const mood = useMood()
   const COUNT = 260
-  const progress = useRef(1) // 1 = finished/idle
+  const progress = useRef(1)
   const dirs = useMemo(() => {
     const d = new Float32Array(COUNT * 3)
     for (let i = 0; i < COUNT; i++) {
@@ -188,7 +188,7 @@ function RouteBurst() {
     }
     ;(points.current.geometry.attributes.position as THREE.BufferAttribute).needsUpdate = true
     if (mat.current) {
-      mat.current.opacity = (1 - ease) * 0.9
+      mat.current.opacity = (1 - ease) * 0.75
       mat.current.color.copy(mood.emissive)
     }
   })
@@ -200,8 +200,8 @@ function RouteBurst() {
       </bufferGeometry>
       <pointsMaterial
         ref={mat}
-        size={0.045}
-        color="#E4B672"
+        size={0.04}
+        color="#C9954F"
         transparent
         opacity={0}
         sizeAttenuation
@@ -213,72 +213,67 @@ function RouteBurst() {
   )
 }
 
-// ─── Orbiting light-trail comet for dynamic video feel ───
-function Comet({ phase = 0, speed = 1, size = 0.06, trailColor = '#E4B672' }: { phase?: number; speed?: number; size?: number; trailColor?: string }) {
-  const ref = useRef<THREE.Mesh>(null!)
+// ─── Data flow curve — a single flowing line of connected nodes, like a live data stream ───
+function DataFlowCurve({ seed = 0, colorHex = '#A8783A', speed = 0.12, radiusMul = 1 }: { seed?: number; colorHex?: string; speed?: number; radiusMul?: number }) {
+  const group = useRef<THREE.Group>(null!)
   const mood = useMood()
-  const curColor = useRef(new THREE.Color(trailColor))
+  const matRefs = useRef<THREE.MeshBasicMaterial[]>([])
+  const NODES = 7
+  const curColor = useRef(new THREE.Color(colorHex))
+
+  const points = useMemo(() => {
+    const pts: THREE.Vector3[] = []
+    for (let i = 0; i < NODES; i++) {
+      const a = (i / (NODES - 1)) * Math.PI * 1.4 + seed
+      const r = 1 + Math.sin(seed * 3 + i * 1.7) * 0.35
+      pts.push(new THREE.Vector3(Math.cos(a) * r, Math.sin(a * 1.3 + seed) * 0.5, Math.sin(a) * r))
+    }
+    return pts
+  }, [seed])
+
+  const curve = useMemo(() => new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.5), [points])
+  const linePoints = useMemo(() => curve.getPoints(48), [curve])
 
   useFrame((state, delta) => {
-    const t = state.clock.elapsedTime * speed + phase
-    const R = mood.radius * 1.3
-    ref.current.position.set(
-      Math.cos(t * 0.6) * R,
-      Math.sin(t * 0.9) * R * 0.4,
-      Math.sin(t * 0.6) * R
+    const lerp = Math.min(delta * 1.6, 1)
+    const t = state.clock.elapsedTime
+    const targetScale = mood.radius * 0.42 * radiusMul
+    group.current.scale.setScalar(
+      group.current.scale.x + (targetScale - group.current.scale.x) * lerp
     )
-    curColor.current.lerp(mood.emissive, Math.min(delta * 1.8, 1))
-    ;(ref.current.material as THREE.MeshBasicMaterial).color.copy(curColor.current)
+    group.current.rotation.y = t * speed + seed
+    group.current.rotation.x = Math.sin(t * 0.1 + seed) * 0.25
+
+    curColor.current.lerp(mood.emissive, lerp)
+    matRefs.current.forEach((m) => m?.color.copy(curColor.current))
   })
 
   return (
-    <Trail width={2.5} length={7} color={trailColor} attenuation={(w) => w * w}>
-      <mesh ref={ref}>
-        <sphereGeometry args={[size, 16, 16]} />
-        <meshBasicMaterial color={trailColor} toneMapped={false} />
-      </mesh>
-    </Trail>
+    <group ref={group}>
+      <Line points={linePoints} color={colorHex} lineWidth={1.4} transparent opacity={0.45} toneMapped={false} />
+      {points.map((p, i) => (
+        <mesh key={i} position={p}>
+          <sphereGeometry args={[0.028, 12, 12]} />
+          <meshBasicMaterial
+            ref={(el) => { if (el) matRefs.current[i] = el }}
+            color={colorHex}
+            toneMapped={false}
+            transparent
+            opacity={0.85}
+          />
+        </mesh>
+      ))}
+    </group>
   )
 }
 
-// ─── Reflective floor for cinematic depth (like a studio product shot) ───
-function FloorReflection() {
-  const mood = useMood()
-  const mat = useRef<any>(null!)
-  const curColor = useRef(new THREE.Color('#C49450'))
-
-  useFrame((_, delta) => {
-    curColor.current.lerp(mood.color, Math.min(delta * 1.8, 1))
-    if (mat.current) mat.current.color?.set?.(curColor.current)
-  })
-
-  return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.4, 0]}>
-      <planeGeometry args={[60, 60]} />
-      <MeshReflectorMaterial
-        ref={mat}
-        blur={[400, 100]}
-        resolution={512}
-        mixBlur={1}
-        mixStrength={35}
-        roughness={1}
-        depthScale={1}
-        minDepthThreshold={0.85}
-        color="#0a0a0c"
-        metalness={0.4}
-        mirror={0.35}
-      />
-    </mesh>
-  )
-}
-
-// ─── Volumetric particle cloud that morphs per route ───
+// ─── Volumetric particle cloud that morphs per route — "data points" ───
 function ParticleField() {
   const points = useRef<THREE.Points>(null!)
   const mat = useRef<THREE.PointsMaterial>(null!)
   const mood = useMood()
   const { pointer } = useThree()
-  const COUNT = 2600
+  const COUNT = 2200
 
   const { base, offs, positions } = useMemo(() => {
     const base = new Float32Array(COUNT * 3)
@@ -297,7 +292,7 @@ function ParticleField() {
   }, [])
 
   const cur = useRef({ r: 3, spread: 0.6 })
-  const curColor = useRef(new THREE.Color('#C49450'))
+  const curColor = useRef(new THREE.Color('#A8783A'))
 
   useFrame((state, delta) => {
     const lerp = Math.min(delta * 1.8, 1)
@@ -332,10 +327,10 @@ function ParticleField() {
       </bufferGeometry>
       <pointsMaterial
         ref={mat}
-        size={0.03}
-        color="#C49450"
+        size={0.026}
+        color="#A8783A"
         transparent
-        opacity={0.9}
+        opacity={0.55}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -345,16 +340,15 @@ function ParticleField() {
   )
 }
 
-// ─── Cinematic camera rig — smooth drift + parallax like a moving shot ───
+// ─── Cinematic camera rig — smooth drift + parallax ───
 function CameraRig() {
   const { camera, pointer } = useThree()
   const mood = useMood()
   useFrame((state, delta) => {
     const lerp = Math.min(delta * 1.4, 1)
     const t = state.clock.elapsedTime
-    // Subtle organic "handheld camera" micro-jitter — makes the motion feel shot, not looped
-    const shakeX = (Math.sin(t * 8.3) * 0.5 + Math.sin(t * 5.1) * 0.5) * 0.025
-    const shakeY = (Math.sin(t * 7.1) * 0.5 + Math.sin(t * 4.4) * 0.5) * 0.025
+    const shakeX = (Math.sin(t * 8.3) * 0.5 + Math.sin(t * 5.1) * 0.5) * 0.02
+    const shakeY = (Math.sin(t * 7.1) * 0.5 + Math.sin(t * 4.4) * 0.5) * 0.02
     const targetZ = mood.camZ + Math.sin(t * 0.15) * 0.4
     const targetX = pointer.x * 1.4 + Math.sin(t * 0.1) * 0.6 + shakeX
     const targetY = mood.camY + pointer.y * 0.9 + Math.cos(t * 0.12) * 0.3 + shakeY
@@ -369,7 +363,7 @@ function CameraRig() {
 function DynamicLights() {
   const l1 = useRef<THREE.PointLight>(null!)
   const mood = useMood()
-  const cur = useRef(new THREE.Color('#E4B672'))
+  const cur = useRef(new THREE.Color('#C9954F'))
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime
     l1.current.position.set(Math.sin(t * 0.5) * 6, Math.cos(t * 0.4) * 4, 4 + Math.sin(t * 0.3) * 2)
@@ -378,9 +372,10 @@ function DynamicLights() {
   })
   return (
     <>
-      <ambientLight intensity={0.25} />
-      <pointLight ref={l1} intensity={45} distance={30} color="#E4B672" />
-      <pointLight position={[-6, -4, -6]} intensity={12} distance={25} color="#8C80F2" />
+      <ambientLight intensity={0.75} color="#FFFDF8" />
+      <pointLight ref={l1} intensity={22} distance={30} color="#C9954F" />
+      <pointLight position={[-6, -4, -6]} intensity={7} distance={25} color="#6E62D9" />
+      <hemisphereLight args={['#FFFFFF', '#E8DFD0', 0.6]} />
     </>
   )
 }
@@ -399,45 +394,36 @@ export default function Scene3D() {
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       >
         <Suspense fallback={null}>
-          <Environment preset="night" />
           <DynamicLights />
           <CameraRig />
-
-          <Stars radius={70} depth={40} count={1600} factor={3.2} saturation={0} fade speed={0.5} />
-          <FloorReflection />
 
           <Core />
           <DataRing tilt={0.55} speedMul={1} offset={1.55} />
           <DataRing tilt={-0.35} speedMul={0.65} offset={1.85} />
-          <Comet phase={0} speed={1} size={0.06} trailColor="#E4B672" />
-          <Comet phase={Math.PI} speed={0.72} size={0.045} trailColor="#8C80F2" />
+          <DataFlowCurve seed={0.4} colorHex="#A8783A" speed={0.1} radiusMul={1.1} />
+          <DataFlowCurve seed={2.6} colorHex="#6E62D9" speed={-0.07} radiusMul={1.35} />
+          <DataFlowCurve seed={4.8} colorHex="#0F9E92" speed={0.055} radiusMul={0.9} />
           <ParticleField />
           <RouteBurst />
 
-          <Sparkles count={70} scale={14} size={3} speed={0.3} opacity={0.5} color="#E4B672" />
+          <Sparkles count={50} scale={13} size={2.4} speed={0.25} opacity={0.35} color="#C9954F" />
 
           <EffectComposer multisampling={0} enableNormalPass={false}>
             <Bloom
-              intensity={1.15}
-              luminanceThreshold={0.15}
-              luminanceSmoothing={0.9}
+              intensity={0.55}
+              luminanceThreshold={0.35}
+              luminanceSmoothing={0.85}
               mipmapBlur
-              radius={0.7}
-            />
-            <DepthOfField
-              focusDistance={0.012}
-              focalLength={0.09}
-              bokehScale={3.5}
-              height={480}
+              radius={0.6}
             />
             <ChromaticAberration
               blendFunction={BlendFunction.NORMAL}
-              offset={[0.0006, 0.0006] as any}
+              offset={[0.0004, 0.0004] as any}
               radialModulation={false}
               modulationOffset={0}
             />
-            <Noise blendFunction={BlendFunction.OVERLAY} opacity={0.035} premultiply />
-            <Vignette eskil={false} offset={0.25} darkness={0.85} />
+            <Noise blendFunction={BlendFunction.OVERLAY} opacity={0.015} premultiply />
+            <Vignette eskil={false} offset={0.35} darkness={0.28} />
           </EffectComposer>
         </Suspense>
       </Canvas>

@@ -31,7 +31,7 @@ export default function Hero() {
               className="absolute -inset-x-8 -inset-y-6 -z-10 rounded-[32px]"
               style={{
                 background:
-                  'radial-gradient(ellipse 100% 90% at 30% 40%, rgba(10,10,12,0.72), rgba(10,10,12,0.4) 60%, transparent 85%)',
+                  'radial-gradient(ellipse 100% 90% at 30% 40%, rgba(250,247,242,0.85), rgba(250,247,242,0.55) 60%, transparent 85%)',
                 backdropFilter: 'blur(18px)',
                 WebkitBackdropFilter: 'blur(18px)',
               }}
@@ -53,7 +53,7 @@ export default function Hero() {
             <motion.h1
               variants={item}
               className="font-display font-bold leading-[0.95] tracking-[-0.04em] text-ink mb-4"
-              style={{ fontSize: 'clamp(64px, 10vw, 128px)', textShadow: '0 4px 32px rgba(0,0,0,0.5)' }}
+              style={{ fontSize: 'clamp(64px, 10vw, 128px)', textShadow: '0 2px 20px rgba(28,25,23,0.08)' }}
             >
               <SplitReveal text={profile.name} delay={0.35} wordDelay={0.08} />
               <br />
@@ -104,7 +104,7 @@ export default function Hero() {
             <motion.div
               variants={item}
               className="grid grid-cols-3 gap-px mt-14 max-w-xl rounded overflow-hidden border border-glass"
-              style={{ background: 'rgba(255,255,255,0.08)' }}
+              style={{ background: 'rgba(28,25,23,0.06)' }}
             >
               {stats.map((s, i) => (
                 <div key={s.l} className="glass px-4 py-5 text-center transition-colors hover:bg-white/[0.04]">
@@ -136,7 +136,7 @@ export default function Hero() {
                 <HeroOrb />
               </div>
               {/* Photo */}
-              <div className="relative w-[300px] h-[300px] rounded-full overflow-hidden border border-goldBorder shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)]">
+              <div className="relative w-[300px] h-[300px] rounded-full overflow-hidden border border-goldBorder shadow-[0_20px_60px_-15px_rgba(28,25,23,0.35)]">
                 <img
                   src="/kenza-photo.jpg"
                   alt={`${profile.name} ${profile.lastName}`}
@@ -144,7 +144,7 @@ export default function Hero() {
                 />
                 <div
                   className="absolute inset-0"
-                  style={{ background: 'linear-gradient(180deg, transparent 55%, rgba(10,10,12,0.55))' }}
+                  style={{ background: 'linear-gradient(180deg, transparent 55%, rgba(28,25,23,0.35))' }}
                 />
               </div>
               {/* Badge signature */}

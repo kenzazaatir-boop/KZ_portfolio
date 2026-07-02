@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Float, MeshDistortMaterial, Sparkles, Environment } from '@react-three/drei'
+import { Float, MeshDistortMaterial, Sparkles, Line } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
-import { useRef, Suspense } from 'react'
+import { useRef, useMemo, Suspense } from 'react'
 import * as THREE from 'three'
 
 // ─── Crystal core orbiting behind the portrait — reacts gently to the cursor ───
@@ -24,15 +24,15 @@ function OrbCore() {
       <mesh ref={mesh}>
         <icosahedronGeometry args={[1, 8]} />
         <MeshDistortMaterial
-          color="#C49450"
-          emissive="#E4B672"
-          emissiveIntensity={0.6}
-          roughness={0.1}
-          metalness={0.95}
-          distort={0.35}
+          color="#A8783A"
+          emissive="#C9954F"
+          emissiveIntensity={0.65}
+          roughness={0.15}
+          metalness={0.8}
+          distort={0.32}
           speed={2.5}
           transparent
-          opacity={0.9}
+          opacity={0.92}
         />
       </mesh>
     </Float>
@@ -51,11 +51,11 @@ function OrbRing() {
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1, 0.01, 8, 128]} />
         <meshStandardMaterial
-          color="#E4B672"
-          emissive="#E4B672"
-          emissiveIntensity={1.6}
+          color="#C9954F"
+          emissive="#C9954F"
+          emissiveIntensity={1.2}
           transparent
-          opacity={0.6}
+          opacity={0.5}
           toneMapped={false}
         />
       </mesh>
@@ -63,9 +63,43 @@ function OrbRing() {
   )
 }
 
+// ─── Small data-flow arc — nodes connected by a curved line, echoes the global scene ───
+function DataArc({ seed = 0, colorHex = '#6E62D9' }: { seed?: number; colorHex?: string }) {
+  const group = useRef<THREE.Group>(null!)
+  const NODES = 5
+  const points = useMemo(() => {
+    const pts: THREE.Vector3[] = []
+    for (let i = 0; i < NODES; i++) {
+      const a = (i / (NODES - 1)) * Math.PI * 1.2 + seed
+      const r = 1.9 + Math.sin(seed * 2 + i) * 0.2
+      pts.push(new THREE.Vector3(Math.cos(a) * r, Math.sin(a * 1.4 + seed) * 0.6, Math.sin(a) * r))
+    }
+    return pts
+  }, [seed])
+  const curve = useMemo(() => new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.5), [points])
+  const linePoints = useMemo(() => curve.getPoints(32), [curve])
+
+  useFrame((state, delta) => {
+    group.current.rotation.y += delta * 0.08
+    group.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.15 + seed) * 0.2
+  })
+
+  return (
+    <group ref={group}>
+      <Line points={linePoints} color={colorHex} lineWidth={1.2} transparent opacity={0.4} toneMapped={false} />
+      {points.map((p, i) => (
+        <mesh key={i} position={p}>
+          <sphereGeometry args={[0.025, 10, 10]} />
+          <meshBasicMaterial color={colorHex} toneMapped={false} transparent opacity={0.8} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
 /**
  * Compact standalone 3D canvas placed behind the Hero portrait —
- * gives the medallion real depth and motion instead of a flat CSS halo.
+ * gives the medallion real depth and motion, data/AI themed for the light palette.
  */
 export default function HeroOrb() {
   const reduced =
@@ -81,14 +115,16 @@ export default function HeroOrb() {
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       >
         <Suspense fallback={null}>
-          <Environment preset="night" />
-          <ambientLight intensity={0.4} />
-          <pointLight position={[3, 3, 3]} intensity={1.2} color="#E4B672" />
+          <ambientLight intensity={0.9} color="#FFFDF8" />
+          <pointLight position={[3, 3, 3]} intensity={1.4} color="#C9954F" />
+          <hemisphereLight args={['#FFFFFF', '#E8DFD0', 0.7]} />
           <OrbCore />
           <OrbRing />
-          <Sparkles count={40} scale={4} size={2.2} speed={0.35} opacity={0.6} color="#E4B672" />
+          <DataArc seed={0.6} colorHex="#6E62D9" />
+          <DataArc seed={3.1} colorHex="#0F9E92" />
+          <Sparkles count={35} scale={4} size={2} speed={0.3} opacity={0.4} color="#C9954F" />
           <EffectComposer multisampling={0} enableNormalPass={false}>
-            <Bloom intensity={0.55} luminanceThreshold={0.25} luminanceSmoothing={0.9} mipmapBlur />
+            <Bloom intensity={0.4} luminanceThreshold={0.4} luminanceSmoothing={0.9} mipmapBlur />
           </EffectComposer>
         </Suspense>
       </Canvas>

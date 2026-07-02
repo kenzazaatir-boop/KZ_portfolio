@@ -23,7 +23,7 @@ export default function Profil() {
                     src="/kenza-photo.jpg"
                     alt="Kenza Zaatir"
                     className="w-28 h-28 rounded-full object-cover object-top border-2 border-goldBorder"
-                    style={{ boxShadow: '0 0 0 5px rgba(196,148,80,0.08), 0 10px 40px rgba(0,0,0,0.5)' }}
+                    style={{ boxShadow: '0 0 0 5px rgba(168,120,58,0.1), 0 10px 30px rgba(28,25,23,0.15)' }}
                   />
                   <span
                     className="absolute -inset-1.5 rounded-full border border-[rgba(196,148,80,0.25)]"

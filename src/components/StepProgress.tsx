@@ -30,7 +30,7 @@ export default function StepProgress() {
               )}
               <span
                 className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
-                  active ? 'bg-gold' : 'bg-[rgba(255,255,255,0.2)] group-hover:bg-gold'
+                  active ? 'bg-gold' : 'bg-[rgba(28,25,23,0.15)] group-hover:bg-gold'
                 }`}
               />
             </span>
