@@ -15,7 +15,7 @@ export default function Hero() {
   return (
     <PageWrapper>
       <section className="min-h-screen flex items-center pt-24 pb-16">
-        <div className="max-w-[1180px] mx-auto px-[clamp(20px,5vw,52px)] w-full">
+        <div className="max-w-[1180px] mx-auto px-[clamp(20px,5vw,52px)] w-full grid lg:grid-cols-[1fr_auto] items-center gap-12">
           <motion.div variants={container} initial="initial" animate="animate" className="max-w-3xl">
             <motion.div variants={item}>
               <span className="inline-flex items-center gap-2 font-mono text-[11px] font-medium tracking-widest uppercase text-[#4ade80] border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.05)] px-3.5 py-1.5 rounded-full mb-7">
@@ -87,6 +87,59 @@ export default function Hero() {
                   <div className="font-mono text-[10px] tracking-wide uppercase text-ink3">{s.l}</div>
                 </div>
               ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Portrait médaillon flottant */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, x: 40 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 1, delay: 0.5, ease: [0.4, 0, 0.2, 1] }}
+            className="hidden lg:flex justify-center items-center relative"
+          >
+            <motion.div
+              animate={{ y: [0, -16, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              className="relative"
+            >
+              {/* Halo lumineux */}
+              <div
+                className="absolute -inset-8 rounded-full blur-3xl opacity-40"
+                style={{ background: 'radial-gradient(circle, rgba(196,148,80,0.55), transparent 70%)' }}
+              />
+              {/* Anneau tournant */}
+              <div
+                className="absolute -inset-4 rounded-full animate-[spin_18s_linear_infinite]"
+                style={{
+                  background:
+                    'conic-gradient(from 0deg, transparent, rgba(196,148,80,0.7), transparent 40%, rgba(196,148,80,0.35), transparent 75%)',
+                  WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px))',
+                  mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px))',
+                }}
+              />
+              {/* Photo */}
+              <div className="relative w-[300px] h-[300px] rounded-full overflow-hidden border border-goldBorder shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)]">
+                <img
+                  src="/kenza-photo.jpg"
+                  alt={`${profile.name} ${profile.lastName}`}
+                  className="w-full h-full object-cover object-top"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{ background: 'linear-gradient(180deg, transparent 55%, rgba(10,10,12,0.55))' }}
+                />
+              </div>
+              {/* Badge signature */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.1 }}
+                className="absolute -bottom-3 left-1/2 -translate-x-1/2 glass px-4 py-2 rounded-full border border-goldBorder whitespace-nowrap"
+              >
+                <span className="font-mono text-[10px] tracking-widest uppercase text-gold">
+                  Business Analytics
+                </span>
+              </motion.div>
             </motion.div>
           </motion.div>
         </div>

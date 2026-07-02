@@ -13,6 +13,8 @@ const external = [
   'three',
   '@react-three/fiber',
   '@react-three/drei',
+  '@react-three/postprocessing',
+  'postprocessing',
   'framer-motion',
   'gsap',
   'lenis',

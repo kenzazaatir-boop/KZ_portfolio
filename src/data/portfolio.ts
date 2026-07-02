@@ -62,6 +62,7 @@ export type Project = {
   desc: string
   bullets: string[]
   tools: string[]
+  image: string
   link?: { label: string; url: string }
   academic?: boolean
 }
@@ -73,6 +74,7 @@ export const projects: Project[] = [
     domainColor: 'gold',
     title: 'Sou9na سوقنا',
     sub: 'Marketplace & e-Business inclusif',
+    image: '/projects/sou9na.jpg',
     note: "Ce projet est né d'un constat simple : 502 000 micro-entrepreneurs tunisiens n'avaient aucune vitrine numérique. J'ai voulu concevoir quelque chose qui change ça vraiment.",
     desc: "Conception d'un écosystème e-business intégré pour transformer Enda Tamweel — leader de la microfinance tunisienne — en hub économique numérique via un modèle Brick & Click.",
     bullets: [
@@ -91,6 +93,7 @@ export const projects: Project[] = [
     domainColor: 'violet',
     title: 'Prédiction Cardiaque',
     sub: 'IA & aide à la décision médicale',
+    image: '/projects/heart.jpg',
     note: "Minimiser les faux négatifs : ma priorité absolue. Parce que manquer un cas à risque en médecine, c'est in-ac-cep-table.",
     desc: "Modèle de classification binaire supervisée sur 918 patients pour prédire la présence d'une maladie cardiaque — optimisé sur le Recall pour les contextes médicaux critiques.",
     bullets: [
@@ -107,6 +110,7 @@ export const projects: Project[] = [
     domainColor: 'teal',
     title: 'Salla7ni صلّحني',
     sub: 'Disruption du marché informel tunisien',
+    image: '/projects/salla7ni.jpg',
     note: "J'ai vécu ce problème personnellement : impossible de trouver un réparateur fiable. Ce projet répond à un vrai besoin.",
     desc: "Plan marketing digital et stratégie go-to-market pour structurer le secteur fragmenté de la réparation en Tunisie — 12M d'habitants, 73% connectés.",
     bullets: [
@@ -123,6 +127,7 @@ export const projects: Project[] = [
     domainColor: 'sky',
     title: 'Prévision de Performance Financière',
     sub: 'Secteur BTP Tunisien · 2010 – 2025',
+    image: '/projects/finance.jpg',
     desc: "Analyse historique complète et modélisation prédictive de la santé financière de 5 entreprises cotées à la BVMT (Carthage Cement, Ciments de Bizerte, SOMOCER, ESSOUKNA, SIMPAR) — secteur représentant 7% du PIB tunisien et 25% des investissements nationaux.",
     bullets: [
       'Analyse cross-sectional : CA, EBITDA, Résultat Net, ROA, ROE, BFR, trésorerie nette et solvabilité',

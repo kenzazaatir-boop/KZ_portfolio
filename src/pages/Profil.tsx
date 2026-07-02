@@ -18,8 +18,17 @@ export default function Profil() {
             {/* Left — bio */}
             <div>
               <Reveal>
-                <div className="w-20 h-20 border border-goldBorder rounded bg-goldD flex items-center justify-center mb-7 shadow-lg">
-                  <span className="font-display text-3xl font-bold text-gold tracking-tight">KZ</span>
+                <div className="relative w-28 h-28 mb-7">
+                  <img
+                    src="/kenza-photo.jpg"
+                    alt="Kenza Zaatir"
+                    className="w-28 h-28 rounded-full object-cover object-top border-2 border-goldBorder"
+                    style={{ boxShadow: '0 0 0 5px rgba(196,148,80,0.08), 0 10px 40px rgba(0,0,0,0.5)' }}
+                  />
+                  <span
+                    className="absolute -inset-1.5 rounded-full border border-[rgba(196,148,80,0.25)]"
+                    style={{ animation: 'ringPulse 3s ease-in-out infinite' }}
+                  />
                 </div>
               </Reveal>
 
