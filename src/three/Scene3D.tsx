@@ -2,9 +2,10 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Float, Environment, Sparkles, MeshDistortMaterial, Trail, Stars, MeshReflectorMaterial } from '@react-three/drei'
 import { EffectComposer, Bloom, Vignette, ChromaticAberration, DepthOfField, Noise } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
-import { useRef, useMemo, Suspense } from 'react'
+import { useRef, useMemo, useState, useEffect, Suspense } from 'react'
 import * as THREE from 'three'
 import { useLocation } from 'react-router-dom'
+
 
 // ─── Per-route cinematic "mood" ──────────────────────────────
 type Mood = {
@@ -35,11 +36,14 @@ function useMood() {
 // ─── Glowing distorted crystalline core (video-like organic motion) ───
 function Core() {
   const mesh = useRef<THREE.Mesh>(null!)
+  const inner = useRef<THREE.Group>(null!)
   const mat = useRef<any>(null!)
   const mood = useMood()
+  const { pointer } = useThree()
   const cur = useRef({ r: 1, distort: 0.3 })
   const curColor = useRef(new THREE.Color('#C49450'))
   const curEmissive = useRef(new THREE.Color('#E4B672'))
+  const look = useRef({ x: 0, y: 0 })
 
   useFrame((state, delta) => {
     const lerp = Math.min(delta * 1.8, 1)
@@ -52,6 +56,14 @@ function Core() {
     mesh.current.rotation.y += delta * 0.15
     mesh.current.rotation.z += delta * 0.05
 
+    // Gentle "attention" toward the cursor — the core subtly leans toward pointer
+    look.current.x += (pointer.x * 0.35 - look.current.x) * Math.min(delta * 2.2, 1)
+    look.current.y += (-pointer.y * 0.25 - look.current.y) * Math.min(delta * 2.2, 1)
+    if (inner.current) {
+      inner.current.rotation.x = look.current.y
+      inner.current.rotation.y = look.current.x
+    }
+
     curColor.current.lerp(mood.color, lerp)
     curEmissive.current.lerp(mood.emissive, lerp)
     if (mat.current) {
@@ -63,22 +75,141 @@ function Core() {
 
   return (
     <Float speed={1.5} rotationIntensity={0.7} floatIntensity={1.1}>
-      <mesh ref={mesh}>
-        <icosahedronGeometry args={[1, 12]} />
-        <MeshDistortMaterial
+      <group ref={inner}>
+        <mesh ref={mesh}>
+          <icosahedronGeometry args={[1, 12]} />
+          <MeshDistortMaterial
+            ref={mat}
+            color="#C49450"
+            emissive="#E4B672"
+            emissiveIntensity={0.35}
+            roughness={0.15}
+            metalness={0.9}
+            clearcoat={1}
+            clearcoatRoughness={0.1}
+            distort={0.3}
+            speed={2.2}
+          />
+        </mesh>
+      </group>
+    </Float>
+  )
+}
+
+// ─── Orbiting "data ring" — thin torus made of segmented arcs, tech/analytics feel ───
+function DataRing({ tilt = 0.5, speedMul = 1, offset = 1.55 }: { tilt?: number; speedMul?: number; offset?: number }) {
+  const group = useRef<THREE.Group>(null!)
+  const mat = useRef<any>(null!)
+  const mood = useMood()
+  const cur = useRef({ r: 1 })
+  const curColor = useRef(new THREE.Color('#E4B672'))
+
+  useFrame((state, delta) => {
+    const lerp = Math.min(delta * 1.8, 1)
+    const t = state.clock.elapsedTime
+    const targetR = mood.radius * offset * 0.34
+    cur.current.r += (targetR - cur.current.r) * lerp
+    group.current.scale.setScalar(cur.current.r)
+    group.current.rotation.z = tilt + Math.sin(t * 0.15) * 0.08
+    group.current.rotation.y += delta * mood.spin * speedMul * -1.4
+
+    curColor.current.lerp(mood.emissive, lerp)
+    if (mat.current) {
+      mat.current.color.copy(curColor.current)
+      mat.current.emissive?.copy(curColor.current)
+    }
+  })
+
+  return (
+    <group ref={group}>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[1, 0.012, 8, 128]} />
+        <meshStandardMaterial
           ref={mat}
-          color="#C49450"
+          color="#E4B672"
           emissive="#E4B672"
-          emissiveIntensity={0.35}
-          roughness={0.15}
-          metalness={0.9}
-          clearcoat={1}
-          clearcoatRoughness={0.1}
-          distort={0.3}
-          speed={2.2}
+          emissiveIntensity={1.4}
+          roughness={0.3}
+          metalness={0.6}
+          transparent
+          opacity={0.55}
+          toneMapped={false}
         />
       </mesh>
-    </Float>
+    </group>
+  )
+}
+
+// ─── Burst of particles fired on route change — a "step complete" pulse ───
+function RouteBurst() {
+  const points = useRef<THREE.Points>(null!)
+  const mat = useRef<THREE.PointsMaterial>(null!)
+  const location = useLocation()
+  const mood = useMood()
+  const COUNT = 260
+  const progress = useRef(1) // 1 = finished/idle
+  const dirs = useMemo(() => {
+    const d = new Float32Array(COUNT * 3)
+    for (let i = 0; i < COUNT; i++) {
+      const theta = Math.random() * Math.PI * 2
+      const phi = Math.acos(Math.random() * 2 - 1)
+      d[i * 3] = Math.sin(phi) * Math.cos(theta)
+      d[i * 3 + 1] = Math.sin(phi) * Math.sin(theta)
+      d[i * 3 + 2] = Math.cos(phi)
+    }
+    return d
+  }, [])
+  const positions = useMemo(() => new Float32Array(COUNT * 3), [])
+  const firstRender = useRef(true)
+
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
+    progress.current = 0
+  }, [location.pathname])
+
+  useFrame((_, delta) => {
+    if (progress.current >= 1) {
+      if (points.current) points.current.visible = false
+      return
+    }
+    points.current.visible = true
+    progress.current = Math.min(1, progress.current + delta * 0.55)
+    const ease = 1 - Math.pow(1 - progress.current, 3)
+    const dist = ease * mood.radius * 2.4
+    const arr = (points.current.geometry.attributes.position as THREE.BufferAttribute).array as Float32Array
+    for (let i = 0; i < COUNT; i++) {
+      const ix = i * 3
+      arr[ix] = dirs[ix] * dist
+      arr[ix + 1] = dirs[ix + 1] * dist
+      arr[ix + 2] = dirs[ix + 2] * dist
+    }
+    ;(points.current.geometry.attributes.position as THREE.BufferAttribute).needsUpdate = true
+    if (mat.current) {
+      mat.current.opacity = (1 - ease) * 0.9
+      mat.current.color.copy(mood.emissive)
+    }
+  })
+
+  return (
+    <points ref={points} visible={false}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" count={COUNT} array={positions} itemSize={3} />
+      </bufferGeometry>
+      <pointsMaterial
+        ref={mat}
+        size={0.045}
+        color="#E4B672"
+        transparent
+        opacity={0}
+        sizeAttenuation
+        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </points>
   )
 }
 
@@ -272,15 +403,18 @@ export default function Scene3D() {
           <DynamicLights />
           <CameraRig />
 
-          <Stars radius={70} depth={40} count={2200} factor={3.2} saturation={0} fade speed={0.5} />
+          <Stars radius={70} depth={40} count={1600} factor={3.2} saturation={0} fade speed={0.5} />
           <FloorReflection />
 
           <Core />
+          <DataRing tilt={0.55} speedMul={1} offset={1.55} />
+          <DataRing tilt={-0.35} speedMul={0.65} offset={1.85} />
           <Comet phase={0} speed={1} size={0.06} trailColor="#E4B672" />
           <Comet phase={Math.PI} speed={0.72} size={0.045} trailColor="#8C80F2" />
           <ParticleField />
+          <RouteBurst />
 
-          <Sparkles count={80} scale={14} size={3} speed={0.3} opacity={0.5} color="#E4B672" />
+          <Sparkles count={70} scale={14} size={3} speed={0.3} opacity={0.5} color="#E4B672" />
 
           <EffectComposer multisampling={0} enableNormalPass={false}>
             <Bloom
