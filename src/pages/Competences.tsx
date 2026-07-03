@@ -19,7 +19,7 @@ export default function Competences() {
         <div className="max-w-[1180px] mx-auto px-[clamp(20px,5vw,52px)]">
           <div className="grid lg:grid-cols-[1fr_2fr] gap-[clamp(40px,6vw,90px)] items-start">
             <Reveal>
-              <div className="label mb-4">Étape 04 — Compétences</div>
+              <div className="label mb-4">Étape 05 — Compétences</div>
               <h2 className="stitle mb-4">
                 Expertise <em>&amp; Outils</em>
               </h2>

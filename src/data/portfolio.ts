@@ -215,7 +215,8 @@ export const navItems = [
   { path: '/', label: 'Accueil', index: '01' },
   { path: '/profil', label: 'Profil', index: '02' },
   { path: '/projets', label: 'Projets', index: '03' },
-  { path: '/competences', label: 'Compétences', index: '04' },
-  { path: '/parcours', label: 'Parcours', index: '05' },
-  { path: '/contact', label: 'Contact', index: '06' },
+  { path: '/dashboard', label: 'Dashboard', index: '04' },
+  { path: '/competences', label: 'Compétences', index: '05' },
+  { path: '/parcours', label: 'Parcours', index: '06' },
+  { path: '/contact', label: 'Contact', index: '07' },
 ]

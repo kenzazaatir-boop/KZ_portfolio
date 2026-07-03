@@ -26,7 +26,7 @@ export default function Contact() {
             />
 
             <Reveal>
-              <div className="label justify-center mb-5">Étape 06 — Contact</div>
+              <div className="label justify-center mb-5">Étape 07 — Contact</div>
             </Reveal>
 
             <Reveal delay={0.08}>

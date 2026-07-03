@@ -38,7 +38,7 @@ export default function Parcours() {
       <section className="pt-32 pb-12">
         <div className="max-w-[1180px] mx-auto px-[clamp(20px,5vw,52px)]">
           <Reveal>
-            <div className="label mb-4">Étape 05 — Parcours</div>
+            <div className="label mb-4">Étape 06 — Parcours</div>
             <h2 className="stitle mb-14">
               Expérience <em>&amp; Formation</em>
             </h2>
