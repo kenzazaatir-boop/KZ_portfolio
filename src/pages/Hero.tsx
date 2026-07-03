@@ -5,6 +5,7 @@ import SplitReveal from '../components/SplitReveal'
 import Magnetic from '../components/Magnetic'
 import CountUp from '../components/CountUp'
 import HeroOrb from '../three/HeroOrb'
+import HeroVideoBackground from '../components/HeroVideoBackground'
 import { profile, stats } from '../data/portfolio'
 
 const container = {
@@ -18,6 +19,7 @@ const item = {
 export default function Hero() {
   return (
     <PageWrapper>
+      <HeroVideoBackground mp4="/media/hero-workspace.mp4" webm="/media/hero-workspace.webm" />
       <section className="min-h-screen flex items-center pt-24 pb-16">
         <div className="max-w-[1180px] mx-auto px-[clamp(20px,5vw,52px)] w-full grid lg:grid-cols-[1fr_auto] items-center gap-12">
           <motion.div

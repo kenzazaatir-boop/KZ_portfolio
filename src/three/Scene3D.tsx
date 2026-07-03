@@ -5,7 +5,6 @@ import { BlendFunction } from 'postprocessing'
 import { useRef, useMemo, useEffect, Suspense } from 'react'
 import * as THREE from 'three'
 import { useLocation } from 'react-router-dom'
-import VideoPanel3D from './VideoPanel3D'
 
 
 // ─── Per-route cinematic "mood" — light, data/AI palette ──────────────────────────────
@@ -381,22 +380,10 @@ function DynamicLights() {
   )
 }
 
-// ─── Video panel — only mounted on the Hero route ───
-function HeroVideoPanel() {
-  const location = useLocation()
-  if (location.pathname !== '/') return null
-  return (
-    <VideoPanel3D
-      src="/media/hero-workspace.mp4"
-      webmSrc="/media/hero-workspace.webm"
-      position={[3.4, -1.1, -2.4]}
-      rotation={[0, -0.3, 0]}
-      width={2.3}
-      height={1.3}
-      tilt={0.1}
-    />
-  )
-}
+// Note: HeroVideoPanel (floating 3D video panel) was removed — Scene3D is no
+// longer mounted on the Hero route at all (see App.tsx), replaced by a
+// full-screen HTML video background (HeroVideoBackground.tsx). VideoPanel3D.tsx
+// itself is kept as a reusable component for other pages in a future lot.
 
 export default function Scene3D() {
   const reduced =
@@ -423,7 +410,9 @@ export default function Scene3D() {
           <DataFlowCurve seed={4.8} colorHex="#0F9E92" speed={0.055} radiusMul={0.9} />
           <ParticleField />
           <RouteBurst />
-          <HeroVideoPanel />
+          {/* HeroVideoPanel removed: the Hero now uses a full-screen HTML video background
+              (HeroVideoBackground.tsx) instead of a floating 3D panel — avoids showing
+              two overlapping videos. VideoPanel3D.tsx is kept for reuse on other pages. */}
 
           <Sparkles count={50} scale={13} size={2.4} speed={0.25} opacity={0.35} color="#C9954F" />
 
