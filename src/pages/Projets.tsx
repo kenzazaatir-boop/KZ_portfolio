@@ -57,7 +57,7 @@ function TiltCard({ project, index }: { project: Project; index: number }) {
             className="w-full h-full object-cover opacity-85 transition-transform duration-700 hover:scale-105"
             style={{ maskImage: 'linear-gradient(180deg, black 55%, transparent 100%)', WebkitMaskImage: 'linear-gradient(180deg, black 55%, transparent 100%)' }}
           />
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(10,10,12,0.15), rgba(10,10,12,0.85))' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(250,247,242,0.1), rgba(250,247,242,0.9))' }} />
           <div className="absolute top-4 left-[clamp(28px,4vw,44px)] right-[clamp(28px,4vw,44px)] flex items-center justify-between">
             <span className="font-mono text-[11px] tracking-wider text-ink2 bg-black/40 backdrop-blur px-2 py-0.5 rounded">{project.num}</span>
             <span className={`font-mono text-[10px] font-semibold tracking-widest uppercase px-2.5 py-1 rounded-sm border backdrop-blur ${domainStyles[project.domainColor]}`}>

@@ -40,11 +40,11 @@ export default function RouteTransition() {
     <div
       ref={panelRef}
       className="fixed inset-0 z-[200] hidden items-center justify-center pointer-events-none"
-      style={{ background: 'linear-gradient(160deg, #0A0A0C 0%, #15110a 60%, #1c1407 100%)' }}
+      style={{ background: 'linear-gradient(160deg, #1C1917 0%, #2A2015 60%, #332612 100%)' }}
     >
       <div ref={labelRef} className="text-center">
-        <div className="rt-index font-mono text-gold text-sm tracking-[0.4em] mb-3" />
-        <div className="rt-label font-display text-ink text-5xl md:text-7xl font-semibold" />
+        <div className="rt-index font-mono text-goldL text-sm tracking-[0.4em] mb-3" />
+        <div className="rt-label font-display text-[#FAF7F2] text-5xl md:text-7xl font-semibold" />
         <div className="mt-5 mx-auto w-16 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
       </div>
     </div>

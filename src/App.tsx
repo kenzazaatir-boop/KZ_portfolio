@@ -16,11 +16,13 @@ import Contact from './pages/Contact'
 
 export default function App() {
   const location = useLocation()
+  const isHero = location.pathname === '/'
 
   return (
     <SmoothScroll>
-      {/* Persistent 3D background that morphs per route */}
-      <Scene3D />
+      {/* Persistent 3D background that morphs per route — not mounted on the Hero,
+          which uses a full-screen video background instead (see Hero.tsx) */}
+      {!isHero && <Scene3D />}
 
       <Cursor />
       <Navbar />

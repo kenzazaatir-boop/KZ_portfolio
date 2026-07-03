@@ -1,11 +1,20 @@
 import { motion } from 'framer-motion'
 import PageWrapper, { Reveal } from '../components/PageWrapper'
 import { StepNav } from '../components/StepProgress'
+import PagePhotoBackdrop from '../components/PagePhotoBackdrop'
 import { skills } from '../data/portfolio'
 
 export default function Competences() {
   return (
     <PageWrapper>
+      <PagePhotoBackdrop
+        src="/media/competences-panel-photo.jpg"
+        width={2.7}
+        height={1.8}
+        corner="bottom-left"
+        containerWidth={340}
+        containerHeight={226}
+      />
       <section className="pt-32 pb-16">
         <div className="max-w-[1180px] mx-auto px-[clamp(20px,5vw,52px)]">
           <div className="grid lg:grid-cols-[1fr_2fr] gap-[clamp(40px,6vw,90px)] items-start">

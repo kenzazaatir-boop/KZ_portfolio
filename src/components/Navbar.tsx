@@ -26,7 +26,7 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'py-3 bg-[rgba(10,10,12,0.85)] backdrop-blur-xl border-b border-[rgba(255,255,255,0.08)]'
+            ? 'py-3 bg-[rgba(250,247,242,0.85)] backdrop-blur-xl border-b border-[rgba(28,25,23,0.08)]'
             : 'py-5 border-b border-transparent'
         }`}
       >
@@ -104,7 +104,7 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
-            className="fixed inset-0 z-[99] bg-[rgba(10,10,12,0.98)] backdrop-blur-lg flex flex-col items-center justify-center gap-7 md:hidden"
+            className="fixed inset-0 z-[99] bg-[rgba(250,247,242,0.98)] backdrop-blur-lg flex flex-col items-center justify-center gap-7 md:hidden"
           >
             {navItems.map((item, i) => (
               <motion.div

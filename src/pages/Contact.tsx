@@ -18,7 +18,7 @@ export default function Contact() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
             className="relative overflow-hidden glass rounded-lg text-center px-[clamp(40px,6vw,80px)] py-[clamp(48px,7vw,80px)]"
-            style={{ boxShadow: '0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)' }}
+            style={{ boxShadow: '0 20px 50px rgba(28,25,23,0.12), inset 0 1px 0 rgba(255,255,255,0.6)' }}
           >
             <span
               className="absolute top-0 left-0 right-0 h-0.5"

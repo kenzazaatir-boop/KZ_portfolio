@@ -4,6 +4,8 @@ import PageWrapper from '../components/PageWrapper'
 import SplitReveal from '../components/SplitReveal'
 import Magnetic from '../components/Magnetic'
 import CountUp from '../components/CountUp'
+import HeroOrb from '../three/HeroOrb'
+import HeroVideoBackground from '../components/HeroVideoBackground'
 import { profile, stats } from '../data/portfolio'
 
 const container = {
@@ -17,9 +19,25 @@ const item = {
 export default function Hero() {
   return (
     <PageWrapper>
+      <HeroVideoBackground mp4="/media/hero-workspace.mp4" webm="/media/hero-workspace.webm" />
       <section className="min-h-screen flex items-center pt-24 pb-16">
         <div className="max-w-[1180px] mx-auto px-[clamp(20px,5vw,52px)] w-full grid lg:grid-cols-[1fr_auto] items-center gap-12">
-          <motion.div variants={container} initial="initial" animate="animate" className="max-w-3xl">
+          <motion.div
+            variants={container}
+            initial="initial"
+            animate="animate"
+            className="max-w-3xl relative"
+          >
+            {/* Readability panel — soft blurred backdrop so text stays crisp over the 3D scene */}
+            <div
+              className="absolute -inset-x-8 -inset-y-6 -z-10 rounded-[32px]"
+              style={{
+                background:
+                  'radial-gradient(ellipse 100% 90% at 30% 40%, rgba(250,247,242,0.85), rgba(250,247,242,0.55) 60%, transparent 85%)',
+                backdropFilter: 'blur(18px)',
+                WebkitBackdropFilter: 'blur(18px)',
+              }}
+            />
             <motion.div variants={item}>
               <span className="inline-flex items-center gap-2 font-mono text-[11px] font-medium tracking-widest uppercase text-[#4ade80] border border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.05)] px-3.5 py-1.5 rounded-full mb-7">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
@@ -37,7 +55,7 @@ export default function Hero() {
             <motion.h1
               variants={item}
               className="font-display font-bold leading-[0.95] tracking-[-0.04em] text-ink mb-4"
-              style={{ fontSize: 'clamp(64px, 10vw, 128px)' }}
+              style={{ fontSize: 'clamp(64px, 10vw, 128px)', textShadow: '0 2px 20px rgba(28,25,23,0.08)' }}
             >
               <SplitReveal text={profile.name} delay={0.35} wordDelay={0.08} />
               <br />
@@ -88,7 +106,7 @@ export default function Hero() {
             <motion.div
               variants={item}
               className="grid grid-cols-3 gap-px mt-14 max-w-xl rounded overflow-hidden border border-glass"
-              style={{ background: 'rgba(255,255,255,0.08)' }}
+              style={{ background: 'rgba(28,25,23,0.06)' }}
             >
               {stats.map((s, i) => (
                 <div key={s.l} className="glass px-4 py-5 text-center transition-colors hover:bg-white/[0.04]">
@@ -115,23 +133,12 @@ export default function Hero() {
               transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
               className="relative"
             >
-              {/* Halo lumineux */}
-              <div
-                className="absolute -inset-8 rounded-full blur-3xl opacity-40"
-                style={{ background: 'radial-gradient(circle, rgba(196,148,80,0.55), transparent 70%)' }}
-              />
-              {/* Anneau tournant */}
-              <div
-                className="absolute -inset-4 rounded-full animate-[spin_18s_linear_infinite]"
-                style={{
-                  background:
-                    'conic-gradient(from 0deg, transparent, rgba(196,148,80,0.7), transparent 40%, rgba(196,148,80,0.35), transparent 75%)',
-                  WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px))',
-                  mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px))',
-                }}
-              />
+              {/* Real 3D orb scene — replaces the old flat CSS halo/ring */}
+              <div className="absolute -inset-24">
+                <HeroOrb />
+              </div>
               {/* Photo */}
-              <div className="relative w-[300px] h-[300px] rounded-full overflow-hidden border border-goldBorder shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)]">
+              <div className="relative w-[300px] h-[300px] rounded-full overflow-hidden border border-goldBorder shadow-[0_20px_60px_-15px_rgba(28,25,23,0.35)]">
                 <img
                   src="/kenza-photo.jpg"
                   alt={`${profile.name} ${profile.lastName}`}
@@ -139,7 +146,7 @@ export default function Hero() {
                 />
                 <div
                   className="absolute inset-0"
-                  style={{ background: 'linear-gradient(180deg, transparent 55%, rgba(10,10,12,0.55))' }}
+                  style={{ background: 'linear-gradient(180deg, transparent 55%, rgba(28,25,23,0.35))' }}
                 />
               </div>
               {/* Badge signature */}
