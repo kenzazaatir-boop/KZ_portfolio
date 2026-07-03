@@ -5,6 +5,7 @@ import { BlendFunction } from 'postprocessing'
 import { useRef, useMemo, useEffect, Suspense } from 'react'
 import * as THREE from 'three'
 import { useLocation } from 'react-router-dom'
+import VideoPanel3D from './VideoPanel3D'
 
 
 // ─── Per-route cinematic "mood" — light, data/AI palette ──────────────────────────────
@@ -380,6 +381,23 @@ function DynamicLights() {
   )
 }
 
+// ─── Video panel — only mounted on the Hero route ───
+function HeroVideoPanel() {
+  const location = useLocation()
+  if (location.pathname !== '/') return null
+  return (
+    <VideoPanel3D
+      src="/media/hero-workspace.mp4"
+      webmSrc="/media/hero-workspace.webm"
+      position={[3.4, -1.1, -2.4]}
+      rotation={[0, -0.3, 0]}
+      width={2.3}
+      height={1.3}
+      tilt={0.1}
+    />
+  )
+}
+
 export default function Scene3D() {
   const reduced =
     typeof window !== 'undefined' &&
@@ -405,6 +423,7 @@ export default function Scene3D() {
           <DataFlowCurve seed={4.8} colorHex="#0F9E92" speed={0.055} radiusMul={0.9} />
           <ParticleField />
           <RouteBurst />
+          <HeroVideoPanel />
 
           <Sparkles count={50} scale={13} size={2.4} speed={0.25} opacity={0.35} color="#C9954F" />
 
