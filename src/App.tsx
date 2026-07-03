@@ -10,6 +10,7 @@ import RouteTransition from './components/RouteTransition'
 import Hero from './pages/Hero'
 import Profil from './pages/Profil'
 import Projets from './pages/Projets'
+import Dashboard from './pages/Dashboard'
 import Competences from './pages/Competences'
 import Parcours from './pages/Parcours'
 import Contact from './pages/Contact'
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/" element={<Hero />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/projets" element={<Projets />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/competences" element={<Competences />} />
           <Route path="/parcours" element={<Parcours />} />
           <Route path="/contact" element={<Contact />} />
