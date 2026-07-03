@@ -1,10 +1,19 @@
 import PageWrapper, { Reveal } from '../components/PageWrapper'
 import { StepNav } from '../components/StepProgress'
+import PagePhotoBackdrop from '../components/PagePhotoBackdrop'
 import { about } from '../data/portfolio'
 
 export default function Profil() {
   return (
     <PageWrapper>
+      <PagePhotoBackdrop
+        src="/media/profil-panel-photo.jpg"
+        width={1.7}
+        height={3.0}
+        corner="bottom-left"
+        containerWidth={220}
+        containerHeight={390}
+      />
       <section className="pt-32 pb-16">
         <div className="max-w-[1180px] mx-auto px-[clamp(20px,5vw,52px)]">
           <Reveal>
